@@ -1,9 +1,9 @@
 {
     "type": "package",
-    "name": "justgook/elm-game-logic",
-    "summary": "An ECS library for Elm. Provides an easy way to build a full game",
+    "name": "abradley2/elm-game-logic",
+    "summary": "(Fork of justgook/elm-game-logic) An ECS library for Elm.",
     "license": "BSD-3-Clause",
-    "version": "3.0.0",
+    "version": "1.0.0",
     "exposed-modules": [
         "Logic.System",
         "Logic.Entity",
