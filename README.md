@@ -1,3 +1,12 @@
+This is a fork of [justgook/elm-game-logic](https://github.com/justgook/elm-game-logic)
+that has a few bug fixes that I needed sooner rather than later.
+
+* https://github.com/justgook/elm-game-logic/pull/5
+* https://github.com/justgook/elm-game-logic/pull/4
+
+Currently I don't have any extra features or functions and
+as of now I don't have any that I want to add.
+
 # Game Logic
 
 An ECS library for Elm. `Logic` provides an easy way to build a full game, using common Entity-Component-System architecture.
