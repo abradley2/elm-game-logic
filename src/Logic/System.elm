@@ -3,6 +3,7 @@ module Logic.System exposing
     , update, step, step2, step3, step4, step5
     , foldl, foldl2, foldl3, foldl4, foldl5
     , indexedFoldl, indexedFoldl2, indexedFoldl3, indexedFoldl4, indexedFoldl5
+    , isOptional, isRequired, advancedFoldl2, advancedFoldl3, advancedFoldl4, advancedFoldl5
     , applyIf, applyMaybe
     )
 
@@ -13,6 +14,11 @@ module Logic.System exposing
 
 @docs foldl, foldl2, foldl3, foldl4, foldl5
 @docs indexedFoldl, indexedFoldl2, indexedFoldl3, indexedFoldl4, indexedFoldl5
+
+
+# Advanced Folds
+
+@docs isOptional, isRequired, advancedFoldl2, advancedFoldl3, advancedFoldl4, advancedFoldl5
 
 
 # Util
@@ -84,6 +90,144 @@ foldl2 f comp1 comp2 acc_ =
             Maybe.map2 (\a b -> f a b acc)
                 value
                 (Component.get n comp2)
+                |> Maybe.withDefault acc
+        )
+        acc_
+        comp1
+
+
+type alias FoldSpec a1 a2 =
+    ( Component.Set a1, Maybe a1 -> Maybe a2 )
+
+
+{-| Specify that a component to be used in an
+advanced fold operation is required.
+-}
+isRequired : Component.Set a -> FoldSpec a a
+isRequired componentSet =
+    ( componentSet, identity )
+
+
+{-| Specify that a component to be used in an
+advanced fold operation is optional.
+-}
+isOptional : Component.Set a -> FoldSpec a (Maybe a)
+isOptional componentSet =
+    ( componentSet, Just )
+
+
+{-| similar to indexFoldl2, but allows you to specify which
+components are required and which are optional.
+
+The tests are a good example of how this works
+
+    let
+        world =
+            withEntities
+                [ -- entity 1
+                  [ ( fooSpec, 1 ) ]
+
+                -- entity 2
+                , [ ( fooSpec, 2 ), ( barSpec, 3 ) ]
+
+                -- entity 3
+                , [ ( barSpec, 999 ) ]
+                ]
+
+        result =
+            Logic.System.advancedFoldl2
+                (\_ foo barMaybe acc -> acc + foo + Maybe.withDefault 0 barMaybe)
+                (Logic.System.isRequired world.foos)
+                (Logic.System.isOptional world.bars)
+                0
+    in
+    Expect.equal result 6
+
+-}
+advancedFoldl2 :
+    (EntityID -> a2 -> b2 -> acc -> acc)
+    -> FoldSpec a1 a2
+    -> FoldSpec b1 b2
+    -> acc
+    -> acc
+advancedFoldl2 f ( comp1, getter1 ) ( comp2, getter2 ) acc_ =
+    indexedFoldlArray
+        (\n value acc ->
+            Maybe.map2 (\a b -> f n a b acc)
+                (getter1 value)
+                (getter2 (Component.get n comp2))
+                |> Maybe.withDefault acc
+        )
+        acc_
+        comp1
+
+
+{-| a version of advancedFoldl2 that allows you to fold over 3 components
+-}
+advancedFoldl3 :
+    (EntityID -> a2 -> b2 -> c2 -> acc -> acc)
+    -> FoldSpec a1 a2
+    -> FoldSpec b1 b2
+    -> FoldSpec c1 c2
+    -> acc
+    -> acc
+advancedFoldl3 f ( comp1, getter1 ) ( comp2, getter2 ) ( comp3, getter3 ) acc_ =
+    indexedFoldlArray
+        (\n value acc ->
+            Maybe.map3 (\a b c -> f n a b c acc)
+                (getter1 value)
+                (getter2 (Component.get n comp2))
+                (getter3 (Component.get n comp3))
+                |> Maybe.withDefault acc
+        )
+        acc_
+        comp1
+
+
+{-| a version of advancedFoldl2 that allows you to fold over 4 components
+-}
+advancedFoldl4 :
+    (EntityID -> a2 -> b2 -> c2 -> d2 -> acc -> acc)
+    -> FoldSpec a1 a2
+    -> FoldSpec b1 b2
+    -> FoldSpec c1 c2
+    -> FoldSpec d1 d2
+    -> acc
+    -> acc
+advancedFoldl4 f ( comp1, getter1 ) ( comp2, getter2 ) ( comp3, getter3 ) ( comp4, getter4 ) acc_ =
+    indexedFoldlArray
+        (\n value acc ->
+            Maybe.map4 (\a b c d -> f n a b c d acc)
+                (getter1 value)
+                (getter2 (Component.get n comp2))
+                (getter3 (Component.get n comp3))
+                (getter4 (Component.get n comp4))
+                |> Maybe.withDefault acc
+        )
+        acc_
+        comp1
+
+
+{-| a version of advancedFoldl2 that allows you to fold over 5 components
+-}
+advancedFoldl5 :
+    (EntityID -> a2 -> b2 -> c2 -> d2 -> e2 -> acc -> acc)
+    -> FoldSpec a1 a2
+    -> FoldSpec b1 b2
+    -> FoldSpec c1 c2
+    -> FoldSpec d1 d2
+    -> FoldSpec e1 e2
+    -> acc
+    -> acc
+advancedFoldl5 f ( comp1, getter1 ) ( comp2, getter2 ) ( comp3, getter3 ) ( comp4, getter4 ) ( comp5, getter5 ) acc_ =
+    indexedFoldlArray
+        (\n value acc ->
+            Maybe.map5 (\a b c d e -> f n a b c d e acc)
+                (getter1 value)
+                (getter2 (Component.get n comp2))
+                (getter3 (Component.get n comp3))
+                (getter4 (Component.get n comp4))
+                (getter5 (Component.get n comp5))
                 |> Maybe.withDefault acc
         )
         acc_
