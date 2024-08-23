@@ -1,11 +1,8 @@
 This is a fork of [justgook/elm-game-logic](https://github.com/justgook/elm-game-logic)
-that has a few bug fixes that I needed sooner rather than later.
+that has a few bug fixes and an additional way to fold over components.
 
 * https://github.com/justgook/elm-game-logic/pull/5
 * https://github.com/justgook/elm-game-logic/pull/4
-
-Currently I don't have any extra features or functions and
-as of now I don't have any that I want to add.
 
 # Game Logic
 
