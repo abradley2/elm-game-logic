@@ -90,4 +90,27 @@ systemTest =
                             0
                 in
                 Expect.equal result 6
+        , test "advanced fold with prohibited" <|
+            \_ ->
+                let
+                    world =
+                        withEntities
+                            [ -- entity 1
+                              [ ( fooSpec, 1 ) ]
+
+                            -- entity 2
+                            , [ ( fooSpec, 2 ), ( barSpec, 3 ) ]
+
+                            -- entity 3
+                            , [ ( fooSpec, 9 ) ]
+                            ]
+
+                    result =
+                        Logic.System.advancedFoldl2
+                            (\_ a _ acc -> acc + a)
+                            (Logic.System.isRequired world.foos)
+                            (Logic.System.isProhibited world.bars)
+                            0
+                in
+                Expect.equal result 10
         ]

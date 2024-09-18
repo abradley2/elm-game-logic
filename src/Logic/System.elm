@@ -3,7 +3,7 @@ module Logic.System exposing
     , update, step, step2, step3, step4, step5
     , foldl, foldl2, foldl3, foldl4, foldl5
     , indexedFoldl, indexedFoldl2, indexedFoldl3, indexedFoldl4, indexedFoldl5
-    , isOptional, isRequired, advancedFoldl2, advancedFoldl3, advancedFoldl4, advancedFoldl5
+    , isOptional, isRequired, isProhibited, advancedFoldl2, advancedFoldl3, advancedFoldl4, advancedFoldl5
     , applyIf, applyMaybe
     )
 
@@ -18,7 +18,7 @@ module Logic.System exposing
 
 # Advanced Folds
 
-@docs isOptional, isRequired, advancedFoldl2, advancedFoldl3, advancedFoldl4, advancedFoldl5
+@docs isOptional, isRequired, isProhibited, advancedFoldl2, advancedFoldl3, advancedFoldl4, advancedFoldl5
 
 
 # Util
@@ -114,6 +114,22 @@ advanced fold operation is optional.
 isOptional : Component.Set a -> FoldSpec a (Maybe a)
 isOptional componentSet =
     ( componentSet, Just )
+
+
+{-| Specify that an entityId an advanced fold
+operation _must not have_ this component
+-}
+isProhibited : Component.Set a -> FoldSpec a ()
+isProhibited componentSet =
+    ( componentSet
+    , \m ->
+        case m of
+            Just _ ->
+                Nothing
+
+            Nothing ->
+                Just ()
+    )
 
 
 {-| similar to indexFoldl2, but allows you to specify which
