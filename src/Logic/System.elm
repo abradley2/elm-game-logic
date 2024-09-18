@@ -116,8 +116,8 @@ isOptional componentSet =
     ( componentSet, Just )
 
 
-{-| Specify that an entityId an advanced fold
-operation _must not have_ this component
+{-| Specify that a component _must not_ be present
+in an advanced fold operation.
 -}
 isProhibited : Component.Set a -> FoldSpec a ()
 isProhibited componentSet =
